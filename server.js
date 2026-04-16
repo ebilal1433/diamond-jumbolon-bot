@@ -36,7 +36,7 @@ app.post("/chat", async (req, res) => {
     const response = await axios.post(
       "https://api.anthropic.com/v1/messages",
       {
-        model: "claude-3-sonnet-20240229",
+        model: "claude-sonnet-4-6",
         max_tokens: 300,
         system: SYSTEM_PROMPT,
         messages: [{ role: "user", content: userMessage }]
@@ -54,12 +54,14 @@ app.post("/chat", async (req, res) => {
       reply: response.data.content[0].text
     });
   } catch (error) {
-    console.error(error.response?.data || error.message);
-    res.json({
+    console.error("CHAT ERROR:");
+    console.error(error.response?.status);
+    console.error(JSON.stringify(error.response?.data, null, 2) || error.message);
+
+    return res.status(500).json({
       reply: "Sorry, I am having trouble right now. Please WhatsApp us for quick help."
     });
   }
-});
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log("Bot running"));
