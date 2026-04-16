@@ -13,30 +13,28 @@ app.use(express.json());
 const API_KEY = process.env.CLAUDE_API_KEY;
 
 const SYSTEM_PROMPT = `
-You are a sales assistant for Diamond Jumbolon, an insulation brand in Pakistan.
+You are a sales assistant for Diamond Jumbolon in Pakistan.
+
+WhatsApp: +92XXXXXXXXXX
 
 Your job:
 - Answer clearly and briefly
-- Share prices and sizes confidently
-- Help the customer choose the right thickness
-- Encourage the customer to place an order on WhatsApp
-- Move every serious buyer toward WhatsApp or phone follow-up
-
-Business contact:
-WhatsApp number: +923111111666
+- Do NOT repeat questions
+- Use available information if already provided
+- Move the customer toward WhatsApp or phone contact
 
 Rules:
-- Keep replies short and friendly
-- Use plain text only
-- Do not use markdown, headings, asterisks, or bullet points
-- If asked about price, always include the exact rate
-- Mention delivery is available across Pakistan
-- Do not repeat the same question in every reply
-- Only ask for missing information if needed
-- If the customer already gave their city, quantity, or requirement, do not ask for it again
-- If the customer is ready to order, tell them to WhatsApp or call +923111111666
-- If the customer prefers, ask them to share their own phone number and say your team will contact them
-- Always try to move the conversation toward order confirmation
+- If the customer already shared city, quantity, or requirement, DO NOT ask again
+- Only ask for missing info if necessary
+- If enough info is available, STOP asking questions
+- Immediately direct customer to WhatsApp or phone
+
+Closing rules:
+- If the customer shows interest, say:
+"To place the order, please WhatsApp or call us at +92XXXXXXXXXX. If you prefer, send your phone number and our team will contact you."
+
+- If customer shares phone number:
+"Thank you, our team will contact you shortly."
 
 Prices:
 1 inch = Rs. 98 per sq ft
@@ -49,16 +47,8 @@ Custom thickness available on request
 Delivery:
 Available all over Pakistan
 
-How to handle leads:
-- If the customer asks for price only, answer the price and then ask one useful next question
-- If the customer seems interested, ask for only the next missing detail
-- If the customer is ready to buy, say:
-  "To place the order, please WhatsApp or call us at +92XXXXXXXXXX. If you want, send me your number and our team will contact you."
-- Do not keep asking "How many square feet do you need?" in every reply
-- Once you have enough details, direct them to WhatsApp instead of continuing to ask more questions
-
 Tone:
-Helpful, sales-focused, professional, simple English
+Short, helpful, sales-focused, natural
 `;
 
 app.get("/", (req, res) => {
@@ -68,14 +58,21 @@ app.get("/", (req, res) => {
 app.post("/chat", async (req, res) => {
   try {
     const userMessage = req.body?.message;
-
-    console.log("BODY RECEIVED:", req.body);
+    const history = req.body?.history || "";
 
     if (!userMessage) {
       return res.status(400).json({
         reply: "Please send your question about price, size, or delivery."
       });
     }
+
+    const fullUserMessage = `
+Conversation history:
+${history || "No previous history."}
+
+Latest customer message:
+${userMessage}
+`;
 
     const response = await axios.post(
       "https://api.anthropic.com/v1/messages",
@@ -86,7 +83,7 @@ app.post("/chat", async (req, res) => {
         messages: [
           {
             role: "user",
-            content: userMessage
+            content: fullUserMessage
           }
         ]
       },
@@ -102,7 +99,7 @@ app.post("/chat", async (req, res) => {
 
     const replyText =
       response.data?.content?.[0]?.text ||
-      "Please WhatsApp us for pricing and order support.";
+      "Please WhatsApp or call us at +92XXXXXXXXXX for order support.";
 
     return res.json({
       reply: replyText
@@ -113,7 +110,7 @@ app.post("/chat", async (req, res) => {
     console.error(JSON.stringify(error.response?.data, null, 2) || error.message);
 
     return res.status(500).json({
-      reply: "Sorry, I am having trouble right now. Please WhatsApp us for quick help."
+      reply: "Sorry, I am having trouble right now. Please WhatsApp or call us for quick help."
     });
   }
 });
