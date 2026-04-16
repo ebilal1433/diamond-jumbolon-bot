@@ -57,8 +57,8 @@ What thickness and how many square feet do you need?
 
 If thickness and quantity are already known, calculate clearly like this:
 The price for 2 inch thickness is Rs. 190 per sq ft.
-For 9784 sq ft:
-9784 x 190 = Rs. 1,858,960
+For 1000 sq ft:
+1000 x 190 = Rs. 190,000
 Delivery is available all over Pakistan.
 
 If customer is ready to buy, say:
@@ -69,18 +69,40 @@ Tone:
 Helpful, short, natural, sales-focused, simple English
 `;
 
+function isGreeting(text) {
+  const t = (text || "").trim().toLowerCase();
+  const greetings = [
+    "hi",
+    "hello",
+    "hey",
+    "salam",
+    "assalamualaikum",
+    "assalam o alaikum",
+    "aoa",
+    "start"
+  ];
+  return greetings.includes(t);
+}
+
 app.get("/", (req, res) => {
   res.send("Diamond Jumbolon bot is live");
 });
 
 app.post("/chat", async (req, res) => {
   try {
-    const userMessage = req.body?.message;
+    const userMessage = req.body?.message || "";
     const history = req.body?.history || "";
 
     if (!userMessage) {
       return res.status(400).json({
-        reply: "Please send your question about price, size, or delivery."
+        reply: "Thanks for messaging Diamond Jumbolon. Please ask about prices, thickness, or delivery."
+      });
+    }
+
+    // Friendly intro for brand new / greeting messages
+    if (isGreeting(userMessage)) {
+      return res.json({
+        reply: "Thanks for messaging Diamond Jumbolon. We can help with prices, thickness, and delivery across Pakistan. If you want pricing, please tell me the thickness and square feet you need."
       });
     }
 
