@@ -10,6 +10,7 @@ app.use(cors());
 app.use(express.json());
 
 const API_KEY = process.env.CLAUDE_API_KEY;
+console.log("API key loaded:", !!API_KEY);
 
 const SYSTEM_PROMPT = `
 You are a sales assistant for Diamond Jumbolon in Pakistan.
