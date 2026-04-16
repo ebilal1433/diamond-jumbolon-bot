@@ -30,8 +30,11 @@ Rules:
 - End with a helpful sales question when appropriate
 
 Prices:
-1 inch = Rs. 120 per sq ft
-2 inch = Rs. 180 per sq ft
+1 inch = Rs. 98 per sq ft
+1.5 inch = Rs. 145 per sq ft
+2 inch = Rs. 190 per sq ft
+3 inch = Rs. 260 per sq ft
+4 inch = Rs. 345 per sq ft
 Custom thickness available on request
 
 Delivery:
