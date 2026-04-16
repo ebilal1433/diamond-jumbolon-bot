@@ -33,6 +33,7 @@ Rules:
 - If enough details are known, give the total cost clearly
 - Redirect to WhatsApp only when the customer is ready to order or asks for next steps
 - Do not keep repeating the same question
+- If the user sends only a number and thickness is already known, assume it is square feet.
 
 Price list:
 1 inch = Rs. 98 per sq ft
