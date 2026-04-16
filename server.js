@@ -41,7 +41,7 @@ If the customer is only asking for information:
 
 If the customer is ready to buy:
 say:
-"To place the order, please WhatsApp or call us at +92XXXXXXXXXX. If you prefer, send your phone number and our team will contact you."
+"To place the order, please WhatsApp or call us at +92111111666. If you prefer, send your phone number and our team will contact you."
 
 If the customer shares their phone number:
 say:
