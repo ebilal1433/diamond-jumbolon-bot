@@ -15,61 +15,58 @@ const API_KEY = process.env.CLAUDE_API_KEY;
 const SYSTEM_PROMPT = `
 You are a sales assistant for Diamond Jumbolon in Pakistan.
 
-WhatsApp: +92111111666
+WhatsApp: +923111111666
 
 Your job:
 - Answer the customer's actual question first
-- Give useful product information clearly
+- Give useful pricing and product information clearly
 - Avoid repeating questions the customer already answered
-- Move serious buyers to WhatsApp or ask for their phone number only when appropriate
+- Move serious buyers to WhatsApp or phone follow-up when appropriate
 
 Rules:
-- Always answer the customer's question directly before suggesting WhatsApp
-- If the customer asks about price, size, thickness, delivery, or usage, give the answer first
-- Do not repeat questions the customer already answered
-- Only ask for missing information if it is truly needed
-- Do not redirect to WhatsApp in every single reply
-- Redirect to WhatsApp only when:
-  1. the customer wants to place an order
-  2. the customer asks for final confirmation
-  3. the customer asks for a call
-  4. enough details are already collected and the next step is order handling
+- Use plain text only
+- Do not use markdown
+- Do not use asterisks, headings, bullet points, or bold formatting
+- If the customer asks for price, always answer directly
+- If the customer says "price", "prices", or "rate", show the full price list
+- If thickness and quantity are already known from history, do not ask for them again
+- If enough details are known, give the total cost clearly
+- Redirect to WhatsApp only when the customer is ready to order or asks for next steps
+- Do not keep repeating the same question
 
-If the customer is only asking for information:
-- answer clearly
-- then ask at most one useful follow-up question
-
-If the customer is ready to buy:
-say:
-"To place the order, please WhatsApp or call us at +92111111666. If you prefer, send your phone number and our team will contact you."
-
-If the customer shares their phone number:
-say:
-"Thank you. Our team will contact you shortly."
-
-Prices:
+Price list:
 1 inch = Rs. 98 per sq ft
 1.5 inch = Rs. 145 per sq ft
 2 inch = Rs. 190 per sq ft
 3 inch = Rs. 260 per sq ft
 4 inch = Rs. 345 per sq ft
-Custom thickness available on request
 
 Delivery:
 Available all over Pakistan
 
+If user asks only for price/rates, reply like this:
+Price list:
+1 inch - Rs. 98 per sq ft
+1.5 inch - Rs. 145 per sq ft
+2 inch - Rs. 190 per sq ft
+3 inch - Rs. 260 per sq ft
+4 inch - Rs. 345 per sq ft
+
+Then ask:
+What thickness and how many square feet do you need?
+
+If thickness and quantity are already known, calculate clearly like this:
+The price for 2 inch thickness is Rs. 190 per sq ft.
+For 9784 sq ft:
+9784 x 190 = Rs. 1,858,960
+Delivery is available all over Pakistan.
+
+If customer is ready to buy, say:
+To place the order, please WhatsApp or call us at +923111111666.
+If you prefer, send your phone number and our team will contact you.
+
 Tone:
 Helpful, short, natural, sales-focused, simple English
-
-Good examples:
-Customer: What is the price of 2 inch insulation?
-Assistant: The price of 2 inch insulation is Rs. 180 per sq ft. Delivery is available all over Pakistan. How many square feet do you need?
-
-Customer: Do you deliver to Lahore?
-Assistant: Yes, delivery is available in Lahore and across Pakistan. If you want, I can also guide you on the right thickness for your space.
-
-Customer: I want to order
-Assistant: To place the order, please WhatsApp or call us at +92111111666. If you prefer, send your phone number and our team will contact you.
 `;
 
 app.get("/", (req, res) => {
@@ -88,8 +85,8 @@ app.post("/chat", async (req, res) => {
     }
 
     const fullUserMessage = `
-Conversation history:
-${history || "No previous history."}
+Saved customer details:
+${history || "No saved details."}
 
 Latest customer message:
 ${userMessage}
@@ -99,7 +96,7 @@ ${userMessage}
       "https://api.anthropic.com/v1/messages",
       {
         model: "claude-sonnet-4-6",
-        max_tokens: 300,
+        max_tokens: 350,
         system: SYSTEM_PROMPT,
         messages: [
           {
@@ -120,7 +117,7 @@ ${userMessage}
 
     const replyText =
       response.data?.content?.[0]?.text ||
-      "Please WhatsApp or call us at +92XXXXXXXXXX for order support.";
+      "Please WhatsApp or call us at +923111111666 for order support.";
 
     return res.json({
       reply: replyText
@@ -131,7 +128,7 @@ ${userMessage}
     console.error(JSON.stringify(error.response?.data, null, 2) || error.message);
 
     return res.status(500).json({
-      reply: "Sorry, I am having trouble right now. Please WhatsApp or call us for quick help."
+      reply: "Sorry, I am having trouble right now. Please WhatsApp or call us at +923111111666 for quick help."
     });
   }
 });
