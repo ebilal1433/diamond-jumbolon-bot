@@ -10,22 +10,29 @@ app.use(cors());
 app.use(express.json());
 
 const API_KEY = process.env.CLAUDE_API_KEY;
-console.log("API key loaded:", !!API_KEY);
 
 const SYSTEM_PROMPT = `
 You are a sales assistant for Diamond Jumbolon in Pakistan.
 
 Rules:
-- Give short answers
-- Provide prices when asked
-- Suggest correct insulation thickness
-- Try to convert to WhatsApp order
+- Keep replies short and clear
+- Use plain text only (no bold, no markdown, no symbols like ** or ##)
+- Always include price when asked
+- Suggest correct insulation thickness if needed
+- Encourage WhatsApp order
+- Mention delivery all over Pakistan
 
 Prices:
-1 inch = 120 PKR/sq ft
-2 inch = 180 PKR/sq ft
+1 inch = Rs. 120 per sq ft
+2 inch = Rs. 180 per sq ft
 
-Delivery: All over Pakistan
+Tone:
+Friendly, simple, sales-focused
+
+Example style:
+The price of 2 inch insulation is Rs. 180 per sq ft.
+Delivery is available all over Pakistan.
+How many square feet do you need?
 `;
 
 app.get("/", (req, res) => {
@@ -34,7 +41,13 @@ app.get("/", (req, res) => {
 
 app.post("/chat", async (req, res) => {
   try {
-    const userMessage = req.body.message;
+    const userMessage = req.body?.message;
+
+    if (!userMessage) {
+      return res.status(400).json({
+        reply: "Please send your question about price, size, or delivery."
+      });
+    }
 
     const response = await axios.post(
       "https://api.anthropic.com/v1/messages",
@@ -42,23 +55,33 @@ app.post("/chat", async (req, res) => {
         model: "claude-sonnet-4-6",
         max_tokens: 300,
         system: SYSTEM_PROMPT,
-        messages: [{ role: "user", content: userMessage }]
+        messages: [
+          {
+            role: "user",
+            content: userMessage
+          }
+        ]
       },
       {
         headers: {
           "x-api-key": API_KEY,
           "anthropic-version": "2023-06-01",
           "content-type": "application/json"
-        }
+        },
+        timeout: 30000
       }
     );
 
-    res.json({
-      reply: response.data.content[0].text
+    const replyText =
+      response.data?.content?.[0]?.text ||
+      "Please WhatsApp us for pricing and order support.";
+
+    return res.json({
+      reply: replyText
     });
   } catch (error) {
     console.error("CHAT ERROR:");
-    console.error(error.response?.status);
+    console.error(error.response?.status || error.message);
     console.error(JSON.stringify(error.response?.data, null, 2) || error.message);
 
     return res.status(500).json({
