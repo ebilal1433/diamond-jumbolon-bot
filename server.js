@@ -26,9 +26,11 @@ Prices:
 
 Delivery: All over Pakistan
 `;
+
 app.get("/", (req, res) => {
   res.send("Diamond Jumbolon bot is live");
 });
+
 app.post("/chat", async (req, res) => {
   try {
     const userMessage = req.body.message;
@@ -62,6 +64,7 @@ app.post("/chat", async (req, res) => {
       reply: "Sorry, I am having trouble right now. Please WhatsApp us for quick help."
     });
   }
+});
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log("Bot running"));
