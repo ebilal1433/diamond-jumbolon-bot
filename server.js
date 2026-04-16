@@ -1,10 +1,13 @@
 import express from "express";
 import axios from "axios";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const app = express();
 app.use(express.json());
 
-const API_KEY = "YOUR_CLAUDE_API_KEY";
+const API_KEY = process.env.CLAUDE_API_KEY;
 
 const SYSTEM_PROMPT = `
 You are a sales assistant for Diamond Jumbolon in Pakistan.
@@ -23,28 +26,35 @@ Delivery: All over Pakistan
 `;
 
 app.post("/chat", async (req, res) => {
-  const userMessage = req.body.message;
+  try {
+    const userMessage = req.body.message;
 
-  const response = await axios.post(
-    "https://api.anthropic.com/v1/messages",
-    {
-      model: "claude-3-sonnet-20240229",
-      max_tokens: 300,
-      system: SYSTEM_PROMPT,
-      messages: [{ role: "user", content: userMessage }]
-    },
-    {
-      headers: {
-        "x-api-key": API_KEY,
-        "anthropic-version": "2023-06-01",
-        "content-type": "application/json"
+    const response = await axios.post(
+      "https://api.anthropic.com/v1/messages",
+      {
+        model: "claude-3-sonnet-20240229",
+        max_tokens: 300,
+        system: SYSTEM_PROMPT,
+        messages: [{ role: "user", content: userMessage }]
+      },
+      {
+        headers: {
+          "x-api-key": API_KEY,
+          "anthropic-version": "2023-06-01",
+          "content-type": "application/json"
+        }
       }
-    }
-  );
+    );
 
-  res.json({
-    reply: response.data.content[0].text
-  });
+    res.json({
+      reply: response.data.content[0].text
+    });
+  } catch (error) {
+    console.error(error.response?.data || error.message);
+    res.json({
+      reply: "Sorry, I am having trouble right now. Please WhatsApp us for quick help."
+    });
+  }
 });
 
 app.listen(3000, () => console.log("Bot running"));
