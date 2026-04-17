@@ -26,11 +26,12 @@ Contact details:
 - Landline: 042 111 111 666
 
 Price list:
-1 inch = Rs. 120 per sq ft
-1.5 inch = Rs. 150 per sq ft
+1 inch = Rs. 98 per sq ft
+1.5 inch = Rs. 145 per sq ft
 2 inch = Rs. 190 per sq ft
 3 inch = Rs. 260 per sq ft
-4 inch = Rs. 320 per sq ft
+4 inch = Rs. 345 per sq ft
+Custom thickness available on request
 
 Rules:
 - Answer the customer's actual question first.
@@ -51,19 +52,20 @@ Rules:
 
 If the customer asks only for prices, reply like this:
 Price list:
-1 inch - Rs. 120 per sq ft
-1.5 inch - Rs. 150 per sq ft
-2 inch - Rs. 190 per sq ft
-3 inch - Rs. 260 per sq ft
-4 inch - Rs. 320 per sq ft
+1 inch = Rs. 98 per sq ft
+1.5 inch = Rs. 145 per sq ft
+2 inch = Rs. 190 per sq ft
+3 inch = Rs. 260 per sq ft
+4 inch = Rs. 345 per sq ft
+Custom thickness available on request
 
 Then ask:
 What thickness and how many square feet do you need?
 
 If thickness and quantity are already known, reply like this:
-The price for 2 inch thickness is Rs. 190 per sq ft.
+The price for 2 inch thickness is Rs. 145 per sq ft.
 For 700 sq ft:
-700 x 190 = Rs. 133,000
+700 x 145 = Rs. 101,500
 Delivery is available all over Pakistan.
 
 If the customer wants to place an order, say:
